@@ -7,19 +7,19 @@ import {
 
 import Login from '../pages/Login';
 import Home from '../pages/Home';
-import AuthProvider from '../contexts/AuthLogin';
+import AuthLogin from '../contexts/AuthLogin';
 import Private from './Private';
 
 export const AppRoutes = () => {
   return (
     <Router>
-      <AuthProvider>
+      <AuthLogin>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/home" element={<Private><Home /></Private>} />
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
-      </AuthProvider>
+      </AuthLogin>
     </Router>
   );
 };

@@ -13,15 +13,18 @@ import {
 } from '@mui/material';
 
 import React, { useContext, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { AuthContext } from '../../contexts/AuthLogin';
+import { loginSuccess, loginFailure } from '../../app/actions';
 
 const LoginForm = () => {
+  const dispatch = useDispatch();
   const { login } = useContext(AuthContext);
-  const [codPessoa, setCodPessoa] = useState('');
-  const [senha, setSenha] = useState('');
+  const [userId, setUserId] = useState('');
+  const [password, setPassword] = useState('');
   const [erro, setErro] = useState('');
 
-  const handleCloseErro = (event, reason) => {
+  const handleCloseErro = (reason) => {
     if (reason === 'clickaway') {
       return;
     }
@@ -32,12 +35,21 @@ const LoginForm = () => {
   const handleLogar = async (event) => {
     event.preventDefault();
 
-    if (!codPessoa || !senha) {
-      setErro('Por favor, preencha os campos CodPessoa e Senha.');
+    if (!userId || !password) {
+      setErro('Por favor, preencha os campos userId e Senha.');
       return;
     }
 
-    login(codPessoa, senha);
+    try {
+      const data = await login(userId, password, 'DV');
+      dispatch(loginSuccess(data));
+      console.log('Login bem sucedido: ', data);
+    } catch (error) {
+      dispatch(loginFailure(error));
+      console.log('Login mal sucedido: ', error);
+    }
+
+    login(userId, password, 'DV');
   };
 
   return (
@@ -63,7 +75,7 @@ const LoginForm = () => {
         fullWidth
       >
         <InputLabel
-          htmlFor="codPessoa"
+          htmlFor="userId"
           sx={{
             ':active': {
               fontSize: '1.2rem',
@@ -74,11 +86,11 @@ const LoginForm = () => {
         </InputLabel>
         <Input
           fullWidth
-          type="text"
-          name="codPessoa"
-          id="codPessoa"
-          value={codPessoa}
-          onChange={(event) => setCodPessoa(event.target.value)}
+          type="number"
+          name="userId"
+          id="userId"
+          value={userId}
+          onChange={(event) => setUserId(event.target.value)}
           autoComplete="codPessoa"
           inputProps={{
             maxLength: 9,
@@ -108,8 +120,8 @@ const LoginForm = () => {
           type="password"
           name="password"
           id="password"
-          value={senha}
-          onChange={(event) => setSenha(event.target.value)}
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
           autoComplete="current-password"
         />
       </FormControl>

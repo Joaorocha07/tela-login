@@ -1,6 +1,6 @@
 import { createContext, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { loginSessao } from '../services/api';
+import axios from 'axios';
 
 export const AuthContext = createContext();
 
@@ -11,18 +11,23 @@ const AuthLogin = ({ children }) => {
   * @param Number codPessoa
   * @param String senha
   */
-  const login = async (codPessoa, senha) => {
+  const login = async (userId, password, database) => {
     try {
-      const resposta = await loginSessao(codPessoa, senha);
-      console.log(resposta);
+      const formData = new FormData();
+      formData.append('userId', userId);
+      formData.append('password', password);
+      formData.append('database', database);
+
+      axios.post('https://acl-hmg.prod.unitri.edu.br/login', formData)
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     } catch (error) {
-      if (error.response && error.response.status === 401) {
-        console.log('CodPessoa ou senha incorretos');
-      } else {
-        console.error(error);
-        console.log('Erro no servidor');
-      }
-      throw new Error(error);
+      console.error(error);
+      console.log('Erro no servidor');
     }
   };
 
